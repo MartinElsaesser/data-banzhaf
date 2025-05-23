@@ -37,7 +37,7 @@ import argparse
 parser = argparse.ArgumentParser('')
 
 parser.add_argument('--dataset', type=str, choices= big_dataset + OpenML_dataset + ['covertype'])
-parser.add_argument('--value_type', type=str)
+parser.add_argument('--value_type', type=str, choices=config.allowed_value_types)
 parser.add_argument('--model_type', type=str)
 parser.add_argument('--n_data', type=int, default=500)
 parser.add_argument('--n_val', type=int, default=2000)
