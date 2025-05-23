@@ -50,7 +50,7 @@ parser.add_argument('--lr', type=float, default=1e-3)
 parser.add_argument('--alpha', type=int, default=1)
 parser.add_argument('--beta', type=int, default=1)
 parser.add_argument('--sigma', type=float, default=0)
-parser.add_argument('--task', type=str)
+parser.add_argument('--task', type=str, choices=['weighted_acc', 'mislabel_detect'])
 parser.add_argument('--debug', action='store_true')
 
 
