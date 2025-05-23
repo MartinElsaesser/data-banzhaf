@@ -29,12 +29,14 @@ import config
 # python applications.py --task mislabel_detect --dataset pol --value_type Shapley_Perm --model_type MLP --n_data 200 --n_val 200 --n_repeat 5 --n_sample 10000 --batch_size 32 --lr 1e-2 --flip_ratio 0.1 --random_state 1
 # python applications.py --task weighted_acc --dataset pol --value_type Shapley_Perm --model_type MLP --n_data 200 --n_val 200 --n_repeat 5 --n_sample 10000 --batch_size 32 --lr 1e-2 --flip_ratio 0.1 --random_state 1
 
+big_dataset = config.big_dataset
+OpenML_dataset = config.OpenML_dataset
 
 import argparse
 
 parser = argparse.ArgumentParser('')
 
-parser.add_argument('--dataset', type=str)
+parser.add_argument('--dataset', type=str, choices= big_dataset + OpenML_dataset + ['covertype'])
 parser.add_argument('--value_type', type=str)
 parser.add_argument('--model_type', type=str)
 parser.add_argument('--n_data', type=int, default=500)
@@ -69,8 +71,6 @@ a, b = args.alpha, args.beta
 task = args.task
 
 
-big_dataset = config.big_dataset
-OpenML_dataset = config.OpenML_dataset
 
 save_dir = 'result/'
 

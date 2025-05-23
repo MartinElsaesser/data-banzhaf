@@ -28,10 +28,13 @@ import pdb
 
 import argparse
 
+big_dataset = config.big_dataset
+OpenML_dataset = config.OpenML_dataset
+
 parser = argparse.ArgumentParser('')
 
 
-parser.add_argument('--dataset', type=str)
+parser.add_argument('--dataset', type=str, choices= big_dataset + OpenML_dataset + ['covertype'])
 parser.add_argument('--value_type', type=str)
 parser.add_argument('--model_type', type=str)
 parser.add_argument('--n_data', type=int, default=500)
@@ -65,8 +68,6 @@ if args.debug:
 
 
 save_dir = 'result/'
-big_dataset = config.big_dataset
-OpenML_dataset = config.OpenML_dataset
 
 
 if dataset in big_dataset+OpenML_dataset:
