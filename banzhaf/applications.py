@@ -32,6 +32,15 @@ import config
 big_dataset = config.big_dataset
 OpenML_dataset = config.OpenML_dataset
 
+
+def v_args_to_json(v_args, filename='v_args.json'):
+	"""
+	Save the value arguments to a json file.
+	"""
+	df = pd.DataFrame(v_args)
+	df.to_json(filename, index=True, orient='records')
+	print(f"Value arguments saved to {filename}")
+
 import argparse
 
 parser = argparse.ArgumentParser('')
@@ -124,6 +133,18 @@ for i in range(5):
       v_args['y_feature'] = np.clip( value_args['y_feature']+np.random.normal(scale=args.sigma, size=len(value_args['y_feature'])), a_min=0, a_max=1)
       v_args['u_total'] = np.clip( value_args['u_total']+np.random.normal(scale=args.sigma), a_min=0, a_max=1)
 
+
+  # v_args is used to compute the value
+  # for debug purposes, we save it to a json file
+  #
+  # the type of v_args expressed as a typescript type is:
+  # type v_args =  {
+  #   X_feature: number[]
+  #   y_feature: number
+  #   sv_baseline: number
+  #   n_data: number
+  # }[]
+  v_args_to_json(v_args, "../testing/output/v_args.json")
   sv = compute_value(value_type, v_args)
 
   if args.debug: pdb.set_trace()
