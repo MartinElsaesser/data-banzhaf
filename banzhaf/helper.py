@@ -176,27 +176,20 @@ def load_value_args(value_type, args):
 
 # args: a dictionary
 def compute_value(value_type, args):
-# beta shapley
   if value_type == 'Shapley_Perm':
     sv = shapley_permsampling_from_data(args['X_feature'], args['y_feature'], args['n_data'], v0=args['sv_baseline'])
-# beta shapley
   elif value_type == 'BetaShapley':
     sv = betasv_permsampling_from_data(args['X_feature'], args['y_feature'], args['n_data'], args['alpha'], args['beta'], v0=args['sv_baseline'])
-# banzhaf
   elif value_type == 'Banzhaf_GT':
     sv = banzhaf_grouptest_bias_from_data(args['X_feature'], args['y_feature'], args['n_data'], dummy=True)
-# leave one out
   elif value_type == 'LOO':
     sv = compute_loo(args['y_feature'], args['u_total'])
-# knn shapley
   elif value_type == 'KNN':
     sv = args['knn']
   elif value_type == 'Uniform':
     sv = np.ones(args['n_data'])
-# beta shapley
   elif value_type == 'Shapley_GT':
     sv = shapley_grouptest_from_data(args['X_feature'], args['y_feature'], args['n_data'])
-# least cores, another existing data value notion which is not a semivalue
   elif value_type == 'LeastCore':
     sv = banzhaf_grouptest_bias_from_data(args['X_feature'], args['y_feature'], args['n_data'], dummy=False)
   return sv
