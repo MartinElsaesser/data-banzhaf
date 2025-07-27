@@ -51,12 +51,12 @@ As additional help to get started with UV. We provide commands for a full run:
 
 #### first step: sample subsets
 ```bash
-uv run banzhaf/sample_for_value.py --dataset pol --value_type Banzhaf_GT --model_type MLP --n_data 200 --n_val 200 --n_repeat 5 --n_sample 100 --batch_size 32 --flip_ratio 0.1 --random_state 0 --lr 0.01
+uv run sample_for_value.py --dataset pol --value_type Banzhaf_GT --model_type MLP --n_data 200 --n_val 200 --n_repeat 5 --n_sample 100 --batch_size 32 --flip_ratio 0.1 --random_state 0 --lr 0.01
 ```
 
 #### second step: compute and evaluate semi values
 ```bash
-uv run banzhaf/applications.py --task mislabel_detect --dataset pol --value_type Banzhaf_GT --model_type MLP --n_data 200 --n_val 200 --n_repeat 5 --n_sample 100 --batch_size 32 --flip_ratio 0.1 --random_state 0 --lr 0.01
+uv run applications.py --task mislabel_detect --dataset pol --value_type Banzhaf_GT --model_type MLP --n_data 200 --n_val 200 --n_repeat 5 --n_sample 100 --batch_size 32 --flip_ratio 0.1 --random_state 0 --lr 0.01
 ```
 
 ## Added project documentation
@@ -66,10 +66,10 @@ This information is accessible through the `--help` flag.
 
 Help is accessible on the sampling step:
 ```bash
-uv run banzhaf/sample_for_value.py --help
+uv run sample_for_value.py --help
 ```
 and on the computation and evaluation step:
 ```bash
-uv run banzhaf/applications.py --help
+uv run applications.py --help
 ```
 
