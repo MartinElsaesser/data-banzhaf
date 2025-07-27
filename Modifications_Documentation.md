@@ -7,8 +7,10 @@ This document highlights the modifications done to this project
 We added functionality to export the results of the model training and the computed semi values.
 Both exports are run by `banzhaf/applications.py`.
 
-The first export saves the results of model training into `testing/output/train_results.json`.
-The second export saves the results of semi value computation into `testing/output/computed_semi_values.json`.
+The first export saves the results of model training into `output/train_results.json`.
+The second export saves the results of semi value computation into `output/computed_semi_values.json`.
+
+Be sure to create an `output` folder in the root of the project.
 
 The exports can than be used as imports for https://github.com/jhstaudacher/DataCGT.
 

@@ -26,7 +26,7 @@ def dump_training_results(v_args, dataset, model_type, value_type, X_train, y_tr
 	v_args2["dataset_name"] = dataset
 	v_args2["model"] = model_type
 	v_args2["training_df"] =  np.column_stack([X_train, y_train])
-	dict_to_json(v_args2, "../testing/output/train_results.json")
+	dict_to_json(v_args2, "../output/train_results.json")
 
 
 
@@ -39,7 +39,7 @@ def dump_computed_semi_values(v_args, dataset, model_type, value_type, X_train, 
 	v_args2["model"] = model_type
 	v_args2["training_df"] =  np.column_stack([X_train, y_train])
 	v_args2["semi_values"] = sv
-	dict_to_json(v_args2, "../testing/output/computed_semi_values.json")
+	dict_to_json(v_args2, "../output/computed_semi_values.json")
 
 
 
