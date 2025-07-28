@@ -6,12 +6,20 @@ This repository provides an implementation of the paper [Data Banzhaf: A Robust 
 ](https://arxiv.org/abs/2205.15466) accepted at [AISTATS 2023](http://aistats.org/aistats2023/) as oral presentation. We propose a robust data valuation method, Data Banzhaf, which is powerful at capturing the importance of data points **at the presence of stochasticity in the learning algorithm**.
 
 
+## Modifications
+This is a fork of the Original project available at: https://github.com/Jiachen-T-Wang/data-banzhaf
+
+To learn more about the modifications view  the [Modification Documentation](./Modifications_Documentation.md)
+
 ## Requirements 
 
 The code is tested with Python 3.8 and PyTorch 1.12.1. The complete list of required packages are available in `requirement.txt`, and can be installed with `pip install -r requirement.txt`. The code should be compatible with other versions of packages.
 
+The new recommended way to install the dependencies is available at: [UV as a package manager](./Modifications_Documentation.md#uv-as-a-package-manager)
+
 ## Quick Start
 
+For info on how to run the code samples down below via UV, go to [Running a python file with UV](./Modifications_Documentation.md#running-a-python-file-with-uv)
 ### Sampling Data Subset Utilities
 
 To estimate the data value score of training data points, we need to first sample the performance scores of a learning algorithm trained on different data subsets (where the sampling distribution depends on the specific data values). The following command trains 10,000 MLPs on different subsets of a size-200 Pol dataset from OpenML. `n_repeat' means for each data subset, we train 5 different models on it (with different random seeds for SGD). 

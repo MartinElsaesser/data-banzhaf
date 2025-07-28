@@ -29,14 +29,19 @@ import config
 # python applications.py --task mislabel_detect --dataset pol --value_type Shapley_Perm --model_type MLP --n_data 200 --n_val 200 --n_repeat 5 --n_sample 10000 --batch_size 32 --lr 1e-2 --flip_ratio 0.1 --random_state 1
 # python applications.py --task weighted_acc --dataset pol --value_type Shapley_Perm --model_type MLP --n_data 200 --n_val 200 --n_repeat 5 --n_sample 10000 --batch_size 32 --lr 1e-2 --flip_ratio 0.1 --random_state 1
 
+big_dataset = config.big_dataset
+OpenML_dataset = config.OpenML_dataset
+
+
+from json_helpers import dump_training_results, dump_computed_semi_values
 
 import argparse
 
 parser = argparse.ArgumentParser('')
 
-parser.add_argument('--dataset', type=str)
-parser.add_argument('--value_type', type=str)
-parser.add_argument('--model_type', type=str)
+parser.add_argument('--dataset', type=str, choices= big_dataset + OpenML_dataset + ['covertype'])
+parser.add_argument('--value_type', type=str, choices=config.allowed_value_types)
+parser.add_argument('--model_type', type=str, choices=['MLP', 'ResNet18', 'ResNet50', 'DenseNet', 'SmallCNN', 'LargeCNN', 'Logistic'])
 parser.add_argument('--n_data', type=int, default=500)
 parser.add_argument('--n_val', type=int, default=2000)
 parser.add_argument('--n_repeat', type=int, default=5)
@@ -48,7 +53,7 @@ parser.add_argument('--lr', type=float, default=1e-3)
 parser.add_argument('--alpha', type=int, default=1)
 parser.add_argument('--beta', type=int, default=1)
 parser.add_argument('--sigma', type=float, default=0)
-parser.add_argument('--task', type=str)
+parser.add_argument('--task', type=str, choices=['weighted_acc', 'mislabel_detect'])
 parser.add_argument('--debug', action='store_true')
 
 
@@ -69,8 +74,6 @@ a, b = args.alpha, args.beta
 task = args.task
 
 
-big_dataset = config.big_dataset
-OpenML_dataset = config.OpenML_dataset
 
 save_dir = 'result/'
 
@@ -124,7 +127,10 @@ for i in range(5):
       v_args['y_feature'] = np.clip( value_args['y_feature']+np.random.normal(scale=args.sigma, size=len(value_args['y_feature'])), a_min=0, a_max=1)
       v_args['u_total'] = np.clip( value_args['u_total']+np.random.normal(scale=args.sigma), a_min=0, a_max=1)
 
+
+  dump_training_results(v_args, dataset, model_type, value_type, x_train, y_train)
   sv = compute_value(value_type, v_args)
+  dump_computed_semi_values(v_args, dataset, model_type, value_type, x_train, y_train, sv)
 
   if args.debug: pdb.set_trace()
 
