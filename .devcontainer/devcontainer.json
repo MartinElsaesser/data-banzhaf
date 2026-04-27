@@ -1,0 +1,54 @@
+{
+    "build": {
+        "context": ".",
+        "dockerfile": "Dockerfile"
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/git:1": {
+            "version": "latest",
+            "ppa": "true"
+        }
+    },
+    "mounts": [
+        // make git work
+        {
+            "source": "${localEnv:HOME}/.ssh/known_hosts",
+            "target": "/home/vscode/.ssh/known_hosts",
+            "type": "bind"
+        },
+        {
+            "source": "${localEnv:SSH_AUTH_SOCK}",
+            "target": "/ssh-agent",
+            "type": "bind"
+        },
+        {
+            "source": "${localEnv:HOME}/.gitconfig",
+            "target": "/home/vscode/.gitconfig",
+            "type": "bind"
+        }
+    ],
+    "containerEnv": {
+        "SSH_AUTH_SOCK": "/ssh-agent"
+    },
+    // Configure tool-specific properties.
+    "customizations": {
+        // Configure properties specific to VS Code.
+        "vscode": {
+            "extensions": [
+                // git tooling
+                "mhutchie.git-graph",
+                // typst
+                "myriad-dreamin.tinymist",
+                // spell checking
+                "streetsidesoftware.code-spell-checker",
+                "streetsidesoftware.code-spell-checker-german",
+                // Python
+                "ms-python.python",
+                "ms-python.debugpy",
+                "tamasfe.even-better-toml",
+                "ms-toolsai.datawrangler"
+            ]
+        }
+    },
+    "remoteUser": "vscode"
+}
