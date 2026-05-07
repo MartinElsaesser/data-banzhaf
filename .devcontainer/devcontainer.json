@@ -9,6 +9,9 @@
             "ppa": "true"
         }
     },
+    "runArgs": [
+        "--security-opt=label=disable"
+    ],
     "mounts": [
         // make git work
         {
