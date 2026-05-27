@@ -1,4 +1,10 @@
-big_dataset = ['MNIST', 'CIFAR10', 'Dog_vs_Cat', 'Dog_vs_CatFeature', 'FMNIST']
+big_dataset = [
+    'MNIST', 
+    'CIFAR10', 
+    # 'Dog_vs_Cat',        # not implemented
+    # 'Dog_vs_CatFeature', # not implemented
+    'FMNIST'
+]
 
 OpenML_dataset = ['fraud', 'apsfail', 'click', 'phoneme', 'wind', 'pol', 'creditcard', 'cpu', 'vehicle', '2dplanes']
 
