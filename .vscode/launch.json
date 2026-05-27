@@ -1,0 +1,53 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Banzhaf: sample_for_value",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/banzhaf/sample_for_value.py",
+            "cwd": "${workspaceFolder}/banzhaf",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "--dataset=pol",
+                "--value_type=Banzhaf_GT",
+                "--model_type=MLP",
+                "--n_data=200",
+                "--n_val=200",
+                "--n_repeat=5",
+                "--n_sample=100",
+                "--batch_size=32",
+                "--flip_ratio=0.1",
+                "--random_state=0",
+                "--lr=0.01"
+            ]
+        },
+        {
+            "name": "Banzhaf: applications",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/banzhaf/applications.py",
+            "cwd": "${workspaceFolder}/banzhaf",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "--task=mislabel_detect",
+                "--dataset=pol",
+                "--value_type=Banzhaf_GT",
+                "--model_type=MLP",
+                "--n_data=200",
+                "--n_val=200",
+                "--n_repeat=5",
+                "--n_sample=100",
+                "--batch_size=32",
+                "--flip_ratio=0.1",
+                "--random_state=0",
+                "--lr=0.01"
+            ]
+        },
+    ]
+}
