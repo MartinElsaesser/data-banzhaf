@@ -49,17 +49,17 @@ parser.add_argument('--debug', action='store_true')
 
 args = parser.parse_args()
 
-dataset = args.dataset
-value_type = args.value_type
-model_type = args.model_type
-n_data = args.n_data
-n_val = args.n_val
-n_repeat = args.n_repeat
-n_sample = args.n_sample
-random_state = args.random_state
-flip_ratio = args.flip_ratio
-batch_size = args.batch_size
-lr = args.lr
+dataset: str = args.dataset
+value_type: str = args.value_type
+model_type: str = args.model_type
+n_data: int = args.n_data
+n_val: int = args.n_val
+n_repeat: int = args.n_repeat
+n_sample: int = args.n_sample
+random_state: int = args.random_state
+flip_ratio: float = args.flip_ratio
+batch_size: int = args.batch_size
+lr: float = args.lr
 
 
 verbose = 0
