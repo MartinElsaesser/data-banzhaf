@@ -13,15 +13,15 @@
             "console": "integratedTerminal",
             "justMyCode": true,
             "args": [
-                "--dataset=pol",
+                "--dataset=cpu",
                 "--value_type=Banzhaf_GT",
                 "--model_type=MLP",
                 "--n_data=200",
                 "--n_val=200",
                 "--n_repeat=5",
-                "--n_sample=100",
+                "--n_sample=800",
                 "--batch_size=32",
-                "--flip_ratio=0.1",
+                "--flip_ratio=0",
                 "--random_state=0",
                 "--lr=0.01"
             ]
@@ -36,15 +36,15 @@
             "justMyCode": true,
             "args": [
                 "--task=mislabel_detect",
-                "--dataset=pol",
+                "--dataset=cpu",
                 "--value_type=Banzhaf_GT",
                 "--model_type=MLP",
                 "--n_data=200",
                 "--n_val=200",
                 "--n_repeat=5",
-                "--n_sample=100",
+                "--n_sample=800",
                 "--batch_size=32",
-                "--flip_ratio=0.1",
+                "--flip_ratio=0",
                 "--random_state=0",
                 "--lr=0.01"
             ]
