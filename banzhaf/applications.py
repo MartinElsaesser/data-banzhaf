@@ -40,16 +40,16 @@ import argparse
 parser = argparse.ArgumentParser('')
 
 parser.add_argument('--dataset', type=str, choices= big_dataset + OpenML_dataset + ['covertype'])
-parser.add_argument('--value_type', type=str, choices=config.allowed_value_types)
+parser.add_argument('--value_type', type=str, choices=['Shapley_Perm', 'BetaShapley', 'Banzhaf_GT','Shapley_GT',  'LOO', 'KNN', 'Uniform', 'LeastCore'])
 parser.add_argument('--model_type', type=str, choices=['MLP', 'ResNet18', 'ResNet50', 'DenseNet', 'SmallCNN', 'LargeCNN', 'Logistic'])
-parser.add_argument('--n_data', type=int, default=500)
-parser.add_argument('--n_val', type=int, default=2000)
-parser.add_argument('--n_repeat', type=int, default=5)
-parser.add_argument('--n_sample', type=int)
-parser.add_argument('--random_state', type=int)
-parser.add_argument('--flip_ratio', type=float, default=0)
-parser.add_argument('--batch_size', type=int, default=8)
-parser.add_argument('--lr', type=float, default=1e-3)
+parser.add_argument('--n_data', type=int, default=500, help="rows in x_train/y_train")
+parser.add_argument('--n_val', type=int, default=2000, help="rows in x_val/y_val")
+parser.add_argument('--n_repeat', type=int, default=1, help="repeat model-training n times per utility function evaluation")
+parser.add_argument('--n_sample', type=int, help="intent not clear; should be a mulitple of n_data")
+parser.add_argument('--random_state', type=int, default=1, help="seed to init random number generators")
+parser.add_argument('--flip_ratio', type=float, default=0, help="percentage of values to intentionally falsify in y_train")
+parser.add_argument('--batch_size', type=int, default=8, help="batch size for model-training")
+parser.add_argument('--lr', type=float, default=1e-3, help="model learning rate")
 parser.add_argument('--alpha', type=int, default=1)
 parser.add_argument('--beta', type=int, default=1)
 parser.add_argument('--sigma', type=float, default=0)
@@ -59,19 +59,20 @@ parser.add_argument('--debug', action='store_true')
 
 args = parser.parse_args()
 
-dataset = args.dataset
-value_type = args.value_type
-model_type = args.model_type
-n_data = args.n_data
-n_val = args.n_val
-n_repeat = args.n_repeat
-n_sample = args.n_sample
-random_state = args.random_state
-flip_ratio = float(args.flip_ratio) * 1.0
-batch_size = args.batch_size
-lr = args.lr
-a, b = args.alpha, args.beta
-task = args.task
+dataset: str = args.dataset
+value_type: str = args.value_type
+model_type: str = args.model_type
+n_data: int = args.n_data
+n_val: int = args.n_val
+n_repeat: int = args.n_repeat
+n_sample: int = args.n_sample
+random_state: int = args.random_state
+flip_ratio: float = float(args.flip_ratio) * 1.0
+batch_size: int = args.batch_size
+lr: float = args.lr
+a: int = args.alpha 
+b: int = args.beta
+task: str = args.task
 
 
 
