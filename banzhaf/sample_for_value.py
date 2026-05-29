@@ -1,21 +1,16 @@
-import pandas as pd
-import torch
-
-
-# general
-import numpy as np
+import argparse
 import pickle
 import random
 
-from helper import *
-from utility_func import *
-from prepare_data import *
 import config
 
-
-import argparse
-
-from json_helpers import dump_training_results, dump_computed_semi_values
+# general
+import numpy as np
+import torch
+from helper import *
+from json_helpers import dict_to_json, rename_valuation_method_for_R
+from prepare_data import *
+from utility_func import *
 
 big_dataset = config.big_dataset
 OpenML_dataset = config.OpenML_dataset
@@ -91,6 +86,24 @@ def process_yfeature(y_feature):
     return y_feature
 
 
+df_train = np.concatenate((x_train, y_train.reshape((y_train.shape[0], 1))), axis=1)
+df_val = np.concatenate((x_val, y_val.reshape((y_train.shape[0], 1))), axis=1)
+
+
+def export_training_results(args: dict):
+    out = {
+        "df_train": df_train,
+        "df_val": df_val,
+        "value_type": value_type,
+        "value_type_R": rename_valuation_method_for_R(value_type),
+        "dataset": dataset,
+        "model_type": model_type,
+        "sv_baseline": sv_baseline,
+        "random_state": random_state,
+    }
+    dict_to_json(out | args, "../output/train_results.json")
+
+
 if value_type == "Banzhaf_MC":
     n_sample_per_data = int(n_sample / n_data)
     save_arg = {}
@@ -103,16 +116,34 @@ elif value_type == "Shapley_Perm":
     X_feature_test, y_feature_test = sample_utility_shapley_perm(n_perm, utility_func_mult, utility_func_args)
     y_feature_test = process_yfeature(y_feature_test)
     save_arg = {"X_feature": X_feature_test, "y_feature": y_feature_test}
+    export_training_results(
+        {
+            "X_subset_indices": X_feature_test,
+            "model_scores_for_subset_indices": y_feature_test,
+        }
+    )
 
 elif value_type == "Banzhaf_GT":
     X_feature_test, y_feature_test = sample_utility_banzhaf_gt(n_sample, utility_func_mult, utility_func_args, dummy=True)
     y_feature_test = process_yfeature(y_feature_test)
     save_arg = {"X_feature": X_feature_test, "y_feature": y_feature_test}
+    export_training_results(
+        {
+            "X_subset_indices": X_feature_test,
+            "model_scores_for_subset_indices": y_feature_test,
+        }
+    )
 
 elif value_type == "Shapley_GT":
     X_feature_test, y_feature_test = sample_utility_shapley_gt(n_sample, utility_func_mult, utility_func_args)
     y_feature_test = process_yfeature(y_feature_test)
     save_arg = {"X_feature": X_feature_test, "y_feature": y_feature_test}
+    export_training_results(
+        {
+            "X_subset_indices": X_feature_test,
+            "model_scores_for_subset_indices": y_feature_test,
+        }
+    )
 
 elif value_type == "LOO":
     X_feature_test, y_feature_test, u_total = sample_utility_loo(utility_func_mult, utility_func_args)
@@ -121,17 +152,14 @@ elif value_type == "LOO":
     if n_repeat == 1:
         u_total = u_total[0]
     save_arg = {"X_feature": X_feature_test, "y_feature": y_feature_test, "u_total": u_total}
+    export_training_results({"X_subset_indices": X_feature_test, "model_scores_for_subset_indices": y_feature_test, "u_total": u_total})
 
 elif value_type == "KNN":
     sv = knn_shapley(x_train, y_train, x_val, y_val, K=10)
-    save_arg = {"knn": sv}
+    export_training_results({"knn_shapley": sv})
 
 save_arg["sv_baseline"] = sv_baseline
 save_arg["n_data"] = n_data
 
 
-df_train = np.concatenate((x_train, y_train.reshape((y_train.shape[0], 1))), axis=1)
-df_val = np.concatenate((x_val, y_val.reshape((y_train.shape[0], 1))), axis=1)
-
-dump_training_results(df_train, df_val, X_feature_test, y_feature_test, value_type, dataset, model_type, sv_baseline, random_state)
 pickle.dump(save_arg, open(save_name, "wb"))
