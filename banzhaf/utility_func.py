@@ -10,8 +10,8 @@ import torchvision
 import torchvision.transforms as transforms
 
 # general
-import pandas as pd 
-import numpy as np 
+import pandas as pd
+import numpy as np
 import copy
 import pickle
 import sys
@@ -71,15 +71,13 @@ class DogCatMLP(torch.nn.Module):
         return logits
 
 
-
-
 class MnistLeNet(torch.nn.Module):
     def __init__(self):
         super(MnistLeNet, self).__init__()
 
-        self.conv1 = nn.Conv2d(in_channels=1, out_channels=20, kernel_size=5, stride=1, padding_mode='replicate')
+        self.conv1 = nn.Conv2d(in_channels=1, out_channels=20, kernel_size=5, stride=1, padding_mode="replicate")
         self.maxpool = nn.MaxPool2d(kernel_size=2, stride=2)
-        self.conv2 = nn.Conv2d(in_channels=20, out_channels=40, kernel_size=5, stride=1, padding_mode='replicate')
+        self.conv2 = nn.Conv2d(in_channels=20, out_channels=40, kernel_size=5, stride=1, padding_mode="replicate")
 
         self.linear1 = nn.Linear(in_features=640, out_features=500)
         self.relu = nn.ReLU()
@@ -101,8 +99,8 @@ class MnistLeNet(torch.nn.Module):
         return logits
 
     def getFeature(self, x, numpy=True):
-        if x.shape[1]==28:
-          x = np.moveaxis(x, 3, 1)
+        if x.shape[1] == 28:
+            x = np.moveaxis(x, 3, 1)
         x = torch.Tensor(x).cuda()
         x = self.conv1(x)
         x = self.relu(x)
@@ -112,17 +110,18 @@ class MnistLeNet(torch.nn.Module):
         x = self.maxpool(x)
         x = torch.flatten(x, 1)
         if numpy:
-          return x.detach().cpu().numpy()
+            return x.detach().cpu().numpy()
         else:
-          return x
+            return x
+
 
 class MnistLargeCNN(torch.nn.Module):
     def __init__(self):
         super(MnistLargeCNN, self).__init__()
 
-        self.conv1 = nn.Conv2d(in_channels=1, out_channels=20, kernel_size=5, stride=1, padding_mode='replicate')
+        self.conv1 = nn.Conv2d(in_channels=1, out_channels=20, kernel_size=5, stride=1, padding_mode="replicate")
         self.maxpool = nn.MaxPool2d(kernel_size=2, stride=2)
-        self.conv2 = nn.Conv2d(in_channels=20, out_channels=40, kernel_size=5, stride=1, padding_mode='replicate')
+        self.conv2 = nn.Conv2d(in_channels=20, out_channels=40, kernel_size=5, stride=1, padding_mode="replicate")
 
         self.linear1 = nn.Linear(in_features=640, out_features=500)
         self.relu = nn.ReLU()
@@ -145,8 +144,8 @@ class MnistLargeCNN(torch.nn.Module):
         return logits
 
     def getFeature(self, x, numpy=True):
-        if x.shape[1]==28:
-          x = np.moveaxis(x, 3, 1)
+        if x.shape[1] == 28:
+            x = np.moveaxis(x, 3, 1)
         x = torch.Tensor(x).cuda()
         x = self.conv1(x)
         x = self.relu(x)
@@ -156,9 +155,9 @@ class MnistLargeCNN(torch.nn.Module):
         x = self.maxpool(x)
         x = torch.flatten(x, 1)
         if numpy:
-          return x.detach().cpu().numpy()
+            return x.detach().cpu().numpy()
         else:
-          return x
+            return x
 
 
 class SmallCNN_CIFAR(nn.Module):
@@ -179,319 +178,313 @@ class SmallCNN_CIFAR(nn.Module):
         x = F.relu(self.fc2(x))
         output = self.fc3(x)
         if last:
-          return output, x
+            return output, x
         else:
-          return output
+            return output
 
     def getFeature(self, x, numpy=True):
-        if x.shape[1]==32:
-          x = np.moveaxis(x, 3, 1)
+        if x.shape[1] == 32:
+            x = np.moveaxis(x, 3, 1)
         x = torch.Tensor(x).cuda()
         x = self.pool(F.relu(self.conv1(x)))
         x = self.pool(F.relu(self.conv2(x)))
         x = torch.flatten(x, 1)
         if numpy:
-          return x.detach().cpu().numpy()
+            return x.detach().cpu().numpy()
         else:
-          return x
+            return x
 
     def get_embedding_dim(self):
         return 84
 
 
-
 def torch_mnist_data_to_acc(model_type, x_train, y_train, x_test, y_test, weights=None, verbose=0, batch_size=32, lr=0.001):
 
-  if len(y_train) == 0: return 0.1
+    if len(y_train) == 0:
+        return 0.1
 
-  if x_train.shape[1]==28:
-    x_train = np.moveaxis(x_train, 3, 1)
-    x_test = np.moveaxis(x_test, 3, 1)
+    if x_train.shape[1] == 28:
+        x_train = np.moveaxis(x_train, 3, 1)
+        x_test = np.moveaxis(x_test, 3, 1)
 
-  if len(y_train.shape)>1 and y_train.shape[1]>1:
-    y_train = np.argmax(y_train, axis=1)
-  
-  if len(y_test.shape)>1 and y_test.shape[1]>1:
-    y_test = np.argmax(y_test, axis=1)
+    if len(y_train.shape) > 1 and y_train.shape[1] > 1:
+        y_train = np.argmax(y_train, axis=1)
 
-  y_train = y_train.reshape(-1)
-  y_test = y_test.reshape(-1)
+    if len(y_test.shape) > 1 and y_test.shape[1] > 1:
+        y_test = np.argmax(y_test, axis=1)
 
-  criterion = torch.nn.CrossEntropyLoss()
+    y_train = y_train.reshape(-1)
+    y_test = y_test.reshape(-1)
 
-  if model_type == 'Logistic':
-    net = MnistLogistic().cuda()
-  elif model_type == 'SmallCNN':
-    net = MnistLeNet().cuda()
-  elif model_type == 'LargeCNN':
-    net = MnistLargeCNN().cuda()
+    criterion = torch.nn.CrossEntropyLoss()
 
-  optimizer = torch.optim.Adam(net.parameters(), lr=lr)
+    if model_type == "Logistic":
+        net = MnistLogistic().cuda()
+    elif model_type == "SmallCNN":
+        net = MnistLeNet().cuda()
+    elif model_type == "LargeCNN":
+        net = MnistLargeCNN().cuda()
 
-  tensor_x, tensor_y = torch.Tensor(x_train).cuda(), torch.Tensor(y_train).cuda()
-  fewshot_dataset = TensorDataset(tensor_x,tensor_y)
+    optimizer = torch.optim.Adam(net.parameters(), lr=lr)
 
-  if weights is None:
-    train_loader = DataLoader(dataset=fewshot_dataset, batch_size=batch_size, shuffle=True)
-  else:
-    sampler = torch.utils.data.sampler.WeightedRandomSampler(weights, num_samples=batch_size)
-    train_loader = DataLoader(dataset=fewshot_dataset, batch_size=batch_size, shuffle=False, sampler=sampler)
+    tensor_x, tensor_y = torch.Tensor(x_train).cuda(), torch.Tensor(y_train).cuda()
+    fewshot_dataset = TensorDataset(tensor_x, tensor_y)
 
-  tensor_x_test, tensor_y_test = torch.Tensor(x_test).cuda(), torch.Tensor(y_test).cuda()
-  test_dataset = TensorDataset(tensor_x_test,tensor_y_test)
-  test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False)
+    if weights is None:
+        train_loader = DataLoader(dataset=fewshot_dataset, batch_size=batch_size, shuffle=True)
+    else:
+        sampler = torch.utils.data.sampler.WeightedRandomSampler(weights, num_samples=batch_size)
+        train_loader = DataLoader(dataset=fewshot_dataset, batch_size=batch_size, shuffle=False, sampler=sampler)
 
-  max_acc = 0
+    tensor_x_test, tensor_y_test = torch.Tensor(x_test).cuda(), torch.Tensor(y_test).cuda()
+    test_dataset = TensorDataset(tensor_x_test, tensor_y_test)
+    test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False)
 
-  for epoch in range(30):
-      for i, (images, labels) in enumerate(train_loader):
-          images = Variable(images)
-          labels = Variable(labels).long()
-          optimizer.zero_grad()
-          logits = net(images)
-          outputs = F.softmax(logits, dim=1)
-          loss = criterion(outputs, labels)
-          loss.backward()
-          optimizer.step()
-      correct = 0
-      total = 0
-      for images, labels in test_loader:
-          images = Variable(images)
-          logits = net(images)
-          outputs = F.softmax(logits, dim=1)
-          _, predicted = torch.max(outputs.data, 1)
-          total += labels.size(0)
-          correct += (predicted == labels).sum()
-      accuracy = correct/total
-      if verbose:
-        print("Epoch: {}. Loss: {}. Accuracy: {}.".format(epoch, loss.item(), accuracy))
+    max_acc = 0
 
-      max_acc = max(max_acc, accuracy.item())
-  return max_acc
+    for epoch in range(30):
+        for i, (images, labels) in enumerate(train_loader):
+            images = Variable(images)
+            labels = Variable(labels).long()
+            optimizer.zero_grad()
+            logits = net(images)
+            outputs = F.softmax(logits, dim=1)
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
+        correct = 0
+        total = 0
+        for images, labels in test_loader:
+            images = Variable(images)
+            logits = net(images)
+            outputs = F.softmax(logits, dim=1)
+            _, predicted = torch.max(outputs.data, 1)
+            total += labels.size(0)
+            correct += (predicted == labels).sum()
+        accuracy = correct / total
+        if verbose:
+            print("Epoch: {}. Loss: {}. Accuracy: {}.".format(epoch, loss.item(), accuracy))
 
-
+        max_acc = max(max_acc, accuracy.item())
+    return max_acc
 
 
 def torch_cifar_data_to_acc(model_type, x_train, y_train, x_test, y_test, weights=None, verbose=0, batch_size=32, lr=0.001):
 
-  if x_train.shape[1]==32:
-    x_train = np.moveaxis(x_train, 3, 1)
-    x_test = np.moveaxis(x_test, 3, 1)
+    if x_train.shape[1] == 32:
+        x_train = np.moveaxis(x_train, 3, 1)
+        x_test = np.moveaxis(x_test, 3, 1)
 
-  y_train = y_train.reshape(-1)
-  y_test = y_test.reshape(-1)
+    y_train = y_train.reshape(-1)
+    y_test = y_test.reshape(-1)
 
-  criterion = torch.nn.CrossEntropyLoss()
+    criterion = torch.nn.CrossEntropyLoss()
 
-  if model_type[:3] == 'VGG':
-    net = VGG(model_type).cuda()
-  elif model_type == 'ResNet18':
-    net = ResNet18().cuda()
-  elif model_type == 'ResNet50':
-    net = ResNet50().cuda()
-  elif model_type == 'DenseNet':
-    net = densenet_cifar().cuda()
-  elif model_type == 'SmallCNN':
-    net = SmallCNN_CIFAR().cuda()
-  else:
-    print('not supported')
+    if model_type[:3] == "VGG":
+        net = VGG(model_type).cuda()
+    elif model_type == "ResNet18":
+        net = ResNet18().cuda()
+    elif model_type == "ResNet50":
+        net = ResNet50().cuda()
+    elif model_type == "DenseNet":
+        net = densenet_cifar().cuda()
+    elif model_type == "SmallCNN":
+        net = SmallCNN_CIFAR().cuda()
+    else:
+        print("not supported")
 
-  n_epoch = 50
+    n_epoch = 50
 
-  optimizer = torch.optim.Adam(net.parameters(), lr=lr, eps=1e-7)
+    optimizer = torch.optim.Adam(net.parameters(), lr=lr, eps=1e-7)
 
-  tensor_x, tensor_y = torch.Tensor(x_train).cuda(), torch.Tensor(y_train).cuda()
-  fewshot_dataset = TensorDataset(tensor_x,tensor_y)
+    tensor_x, tensor_y = torch.Tensor(x_train).cuda(), torch.Tensor(y_train).cuda()
+    fewshot_dataset = TensorDataset(tensor_x, tensor_y)
 
-  if weights is None:
-    train_loader = DataLoader(dataset=fewshot_dataset, batch_size=batch_size, shuffle=True)
-  else:
-    sampler = torch.utils.data.sampler.WeightedRandomSampler(weights, num_samples=batch_size)
-    train_loader = DataLoader(dataset=fewshot_dataset, batch_size=batch_size, shuffle=False, sampler=sampler)
+    if weights is None:
+        train_loader = DataLoader(dataset=fewshot_dataset, batch_size=batch_size, shuffle=True)
+    else:
+        sampler = torch.utils.data.sampler.WeightedRandomSampler(weights, num_samples=batch_size)
+        train_loader = DataLoader(dataset=fewshot_dataset, batch_size=batch_size, shuffle=False, sampler=sampler)
 
-  tensor_x_test, tensor_y_test = torch.Tensor(x_test).cuda(), torch.Tensor(y_test).cuda()
-  test_dataset = TensorDataset(tensor_x_test,tensor_y_test)
-  test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False)
+    tensor_x_test, tensor_y_test = torch.Tensor(x_test).cuda(), torch.Tensor(y_test).cuda()
+    test_dataset = TensorDataset(tensor_x_test, tensor_y_test)
+    test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False)
 
-  max_acc = 0
+    max_acc = 0
 
-  for epoch in range(30):
-      for i, (images, labels) in enumerate(train_loader):
-          images = Variable(images)
-          labels = Variable(labels).long()
-          optimizer.zero_grad()
-          logits = net(images)
-          outputs = F.softmax(logits, dim=1)
-          loss = criterion(outputs, labels)
-          loss.backward()
-          optimizer.step()
-      correct = 0
-      total = 0
-      for images, labels in test_loader:
-          images = Variable(images)
-          logits = net(images)
-          outputs = F.softmax(logits, dim=1)
-          _, predicted = torch.max(outputs.data, 1)
-          total += labels.size(0)
-          correct += (predicted == labels).sum()
-      accuracy = correct/total
-      if verbose:
-        print("Epoch: {}. Loss: {}. Accuracy: {}.".format(epoch, loss.item(), accuracy))
+    for epoch in range(30):
+        for i, (images, labels) in enumerate(train_loader):
+            images = Variable(images)
+            labels = Variable(labels).long()
+            optimizer.zero_grad()
+            logits = net(images)
+            outputs = F.softmax(logits, dim=1)
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
+        correct = 0
+        total = 0
+        for images, labels in test_loader:
+            images = Variable(images)
+            logits = net(images)
+            outputs = F.softmax(logits, dim=1)
+            _, predicted = torch.max(outputs.data, 1)
+            total += labels.size(0)
+            correct += (predicted == labels).sum()
+        accuracy = correct / total
+        if verbose:
+            print("Epoch: {}. Loss: {}. Accuracy: {}.".format(epoch, loss.item(), accuracy))
 
-      max_acc = max(max_acc, accuracy.item())
-  return max_acc
-
+        max_acc = max(max_acc, accuracy.item())
+    return max_acc
 
 
 def torch_dogcat_data_to_acc(model_type, x_train, y_train, x_test, y_test, weights=None, verbose=0, batch_size=32, lr=0.001, return_net=False):
 
-  if x_train.shape[1]==32:
-    x_train = np.moveaxis(x_train, 3, 1)
-    x_test = np.moveaxis(x_test, 3, 1)
+    if x_train.shape[1] == 32:
+        x_train = np.moveaxis(x_train, 3, 1)
+        x_test = np.moveaxis(x_test, 3, 1)
 
-  y_train = y_train.reshape(-1)
-  y_test = y_test.reshape(-1)
+    y_train = y_train.reshape(-1)
+    y_test = y_test.reshape(-1)
 
-  criterion = torch.nn.CrossEntropyLoss()
+    criterion = torch.nn.CrossEntropyLoss()
 
-  if model_type == 'ResNet18':
-    net = ResNet18(num_classes=2).cuda()
-  else:
-    print('not supported')
+    if model_type == "ResNet18":
+        net = ResNet18(num_classes=2).cuda()
+    else:
+        print("not supported")
 
-  n_epoch = 50
+    n_epoch = 50
 
-  optimizer = torch.optim.Adam(net.parameters(), lr=lr, eps=1e-7)
+    optimizer = torch.optim.Adam(net.parameters(), lr=lr, eps=1e-7)
 
-  tensor_x, tensor_y = torch.Tensor(x_train).cuda(), torch.Tensor(y_train).cuda()
-  fewshot_dataset = TensorDataset(tensor_x,tensor_y)
+    tensor_x, tensor_y = torch.Tensor(x_train).cuda(), torch.Tensor(y_train).cuda()
+    fewshot_dataset = TensorDataset(tensor_x, tensor_y)
 
-  if weights is None:
-    train_loader = DataLoader(dataset=fewshot_dataset, batch_size=batch_size, shuffle=True)
-  else:
-    sampler = torch.utils.data.sampler.WeightedRandomSampler(weights, num_samples=batch_size)
-    train_loader = DataLoader(dataset=fewshot_dataset, batch_size=batch_size, shuffle=False, sampler=sampler)
+    if weights is None:
+        train_loader = DataLoader(dataset=fewshot_dataset, batch_size=batch_size, shuffle=True)
+    else:
+        sampler = torch.utils.data.sampler.WeightedRandomSampler(weights, num_samples=batch_size)
+        train_loader = DataLoader(dataset=fewshot_dataset, batch_size=batch_size, shuffle=False, sampler=sampler)
 
-  tensor_x_test, tensor_y_test = torch.Tensor(x_test).cuda(), torch.Tensor(y_test).cuda()
-  test_dataset = TensorDataset(tensor_x_test,tensor_y_test)
-  test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False)
+    tensor_x_test, tensor_y_test = torch.Tensor(x_test).cuda(), torch.Tensor(y_test).cuda()
+    test_dataset = TensorDataset(tensor_x_test, tensor_y_test)
+    test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False)
 
-  max_acc = 0
+    max_acc = 0
 
-  for epoch in range(30):
-      for i, (images, labels) in enumerate(train_loader):
-          images = Variable(images)
-          labels = Variable(labels).long()
-          optimizer.zero_grad()
-          logits = net(images)
-          outputs = F.softmax(logits, dim=1)
-          loss = criterion(outputs, labels)
-          loss.backward()
-          optimizer.step()
-      correct = 0
-      total = 0
-      for images, labels in test_loader:
-          images = Variable(images)
-          logits = net(images)
-          outputs = F.softmax(logits, dim=1)
-          _, predicted = torch.max(outputs.data, 1)
-          total += labels.size(0)
-          correct += (predicted == labels).sum()
-      accuracy = correct/total
-      if verbose:
-        print("Epoch: {}. Loss: {}. Accuracy: {}.".format(epoch, loss.item(), accuracy))
+    for epoch in range(30):
+        for i, (images, labels) in enumerate(train_loader):
+            images = Variable(images)
+            labels = Variable(labels).long()
+            optimizer.zero_grad()
+            logits = net(images)
+            outputs = F.softmax(logits, dim=1)
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
+        correct = 0
+        total = 0
+        for images, labels in test_loader:
+            images = Variable(images)
+            logits = net(images)
+            outputs = F.softmax(logits, dim=1)
+            _, predicted = torch.max(outputs.data, 1)
+            total += labels.size(0)
+            correct += (predicted == labels).sum()
+        accuracy = correct / total
+        if verbose:
+            print("Epoch: {}. Loss: {}. Accuracy: {}.".format(epoch, loss.item(), accuracy))
 
-      if accuracy.item() > max_acc:
-        net_best = net
+        if accuracy.item() > max_acc:
+            net_best = net
 
-      max_acc = max(max_acc, accuracy.item())
+        max_acc = max(max_acc, accuracy.item())
 
-  if return_net:
-    return max_acc, net_best
-  else:
-    return max_acc
-
+    if return_net:
+        return max_acc, net_best
+    else:
+        return max_acc
 
 
 def torch_dogcatFeature_data_to_acc(model_type, x_train, y_train, x_test, y_test, weights=None, verbose=0, batch_size=32, lr=0.001, return_net=False):
 
-  criterion = torch.nn.CrossEntropyLoss()
+    criterion = torch.nn.CrossEntropyLoss()
 
-  if model_type == 'Logistic':
-    net = DogCatLogistic().cuda()
-  elif model_type == 'MLP':
-    net = DogCatMLP().cuda()
-  else:
-    print('not supported')
+    if model_type == "Logistic":
+        net = DogCatLogistic().cuda()
+    elif model_type == "MLP":
+        net = DogCatMLP().cuda()
+    else:
+        print("not supported")
 
-  n_epoch = 15
+    n_epoch = 15
 
-  optimizer = torch.optim.Adam(net.parameters(), lr=lr, eps=1e-7)
+    optimizer = torch.optim.Adam(net.parameters(), lr=lr, eps=1e-7)
 
-  tensor_x, tensor_y = torch.Tensor(x_train).cuda(), torch.Tensor(y_train).cuda()
-  fewshot_dataset = TensorDataset(tensor_x,tensor_y)
+    tensor_x, tensor_y = torch.Tensor(x_train).cuda(), torch.Tensor(y_train).cuda()
+    fewshot_dataset = TensorDataset(tensor_x, tensor_y)
 
-  if weights is None:
-    train_loader = DataLoader(dataset=fewshot_dataset, batch_size=batch_size, shuffle=True)
-  else:
-    sampler = torch.utils.data.sampler.WeightedRandomSampler(weights, num_samples=batch_size)
-    train_loader = DataLoader(dataset=fewshot_dataset, batch_size=batch_size, shuffle=False, sampler=sampler)
+    if weights is None:
+        train_loader = DataLoader(dataset=fewshot_dataset, batch_size=batch_size, shuffle=True)
+    else:
+        sampler = torch.utils.data.sampler.WeightedRandomSampler(weights, num_samples=batch_size)
+        train_loader = DataLoader(dataset=fewshot_dataset, batch_size=batch_size, shuffle=False, sampler=sampler)
 
-  tensor_x_test, tensor_y_test = torch.Tensor(x_test).cuda(), torch.Tensor(y_test).cuda()
-  test_dataset = TensorDataset(tensor_x_test,tensor_y_test)
-  test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False)
+    tensor_x_test, tensor_y_test = torch.Tensor(x_test).cuda(), torch.Tensor(y_test).cuda()
+    test_dataset = TensorDataset(tensor_x_test, tensor_y_test)
+    test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False)
 
-  max_acc = 0
+    max_acc = 0
 
-  for epoch in range(n_epoch):
-      for i, (images, labels) in enumerate(train_loader):
-          images = Variable(images)
-          labels = Variable(labels).long()
-          optimizer.zero_grad()
-          logits = net(images)
-          outputs = F.softmax(logits, dim=1)
-          loss = criterion(outputs, labels)
-          loss.backward()
-          optimizer.step()
-      correct = 0
-      total = 0
-      for images, labels in test_loader:
-          images = Variable(images)
-          logits = net(images)
-          outputs = F.softmax(logits, dim=1)
-          _, predicted = torch.max(outputs.data, 1)
-          total += labels.size(0)
-          correct += (predicted == labels).sum()
-      accuracy = correct/total
-      if verbose:
-        print("Epoch: {}. Loss: {}. Accuracy: {}.".format(epoch, loss.item(), accuracy))
+    for epoch in range(n_epoch):
+        for i, (images, labels) in enumerate(train_loader):
+            images = Variable(images)
+            labels = Variable(labels).long()
+            optimizer.zero_grad()
+            logits = net(images)
+            outputs = F.softmax(logits, dim=1)
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
+        correct = 0
+        total = 0
+        for images, labels in test_loader:
+            images = Variable(images)
+            logits = net(images)
+            outputs = F.softmax(logits, dim=1)
+            _, predicted = torch.max(outputs.data, 1)
+            total += labels.size(0)
+            correct += (predicted == labels).sum()
+        accuracy = correct / total
+        if verbose:
+            print("Epoch: {}. Loss: {}. Accuracy: {}.".format(epoch, loss.item(), accuracy))
 
-      if accuracy.item() > max_acc:
-        net_best = net
+        if accuracy.item() > max_acc:
+            net_best = net
 
-      max_acc = max(max_acc, accuracy.item())
+        max_acc = max(max_acc, accuracy.item())
 
-  if return_net:
-    return max_acc, net_best
-  else:
-    return max_acc
-
+    if return_net:
+        return max_acc, net_best
+    else:
+        return max_acc
 
 
 def binary_data_to_acc(model_type, x_train, y_train, x_test, y_test, w=None):
-  if model_type == 'Logistic':
-    model = LogisticRegression(max_iter=5000, solver='liblinear')
-  elif model_type == 'SVM':
-    model = SVC(kernel='rbf', max_iter=5000, C=1)
-  if len(y_train)==0:
-    return 0.5, 0.5
-  try:
-    model.fit(x_train, y_train, sample_weight=w)
-  except:
-    return 0.5
-  acc = model.score(x_test, y_test)
-  return acc
-
+    if model_type == "Logistic":
+        model = LogisticRegression(max_iter=5000, solver="liblinear")
+    elif model_type == "SVM":
+        model = SVC(kernel="rbf", max_iter=5000, C=1)
+    if len(y_train) == 0:
+        return 0.5, 0.5
+    try:
+        model.fit(x_train, y_train, sample_weight=w)
+    except:
+        return 0.5
+    acc = model.score(x_test, y_test)
+    return acc
 
 
 class BinaryMLP(torch.nn.Module):
@@ -499,7 +492,7 @@ class BinaryMLP(torch.nn.Module):
         super(BinaryMLP, self).__init__()
         self.linear1 = nn.Linear(in_features=input_dim, out_features=hidden_dim)
         self.linear2 = nn.Linear(in_features=hidden_dim, out_features=2)
-        #self.relu = nn.ReLU()
+        # self.relu = nn.ReLU()
         self.relu = nn.LeakyReLU()
 
     def forward(self, x):
@@ -512,71 +505,64 @@ class BinaryMLP(torch.nn.Module):
 
 def torch_binary_data_to_acc(model_type, x_train, y_train, x_test, y_test, weights=None, verbose=0, batch_size=32, lr=0.001, return_net=False):
 
-  device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    device = "cuda" if torch.cuda.is_available() else "cpu"
 
-  if model_type == 'MLP':
-    net = BinaryMLP( x_train.shape[1], max(100, int(x_train.shape[1]/2)) ).to(device)
-  else:
-    print('not supported')
+    if model_type == "MLP":
+        net = BinaryMLP(x_train.shape[1], max(100, int(x_train.shape[1] / 2))).to(device)
+    else:
+        print("not supported")
 
-  n_epoch = 15
-  optimizer = torch.optim.Adam(net.parameters(), lr=lr, eps=1e-7)
-  criterion = torch.nn.CrossEntropyLoss()
+    n_epoch = 15
+    optimizer = torch.optim.Adam(net.parameters(), lr=lr, eps=1e-7)
+    criterion = torch.nn.CrossEntropyLoss()
 
-  tensor_x, tensor_y = torch.Tensor(x_train).to(device), torch.Tensor(y_train).to(device)
-  fewshot_dataset = TensorDataset(tensor_x,tensor_y)
+    tensor_x, tensor_y = torch.Tensor(x_train).to(device), torch.Tensor(y_train).to(device)
+    fewshot_dataset = TensorDataset(tensor_x, tensor_y)
 
-  if weights is None:
-    train_loader = DataLoader(dataset=fewshot_dataset, batch_size=batch_size, shuffle=True)
-  else:
-    sampler = torch.utils.data.sampler.WeightedRandomSampler(weights, num_samples=batch_size)
-    train_loader = DataLoader(dataset=fewshot_dataset, batch_size=batch_size, shuffle=False, sampler=sampler)
+    if weights is None:
+        train_loader = DataLoader(dataset=fewshot_dataset, batch_size=batch_size, shuffle=True)
+    else:
+        sampler = torch.utils.data.sampler.WeightedRandomSampler(weights, num_samples=batch_size)
+        train_loader = DataLoader(dataset=fewshot_dataset, batch_size=batch_size, shuffle=False, sampler=sampler)
 
-  tensor_x_test, tensor_y_test = torch.Tensor(x_test).to(device), torch.Tensor(y_test).to(device)
-  test_dataset = TensorDataset(tensor_x_test,tensor_y_test)
-  test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False)
+    tensor_x_test, tensor_y_test = torch.Tensor(x_test).to(device), torch.Tensor(y_test).to(device)
+    test_dataset = TensorDataset(tensor_x_test, tensor_y_test)
+    test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False)
 
-  max_acc = 0
+    max_acc = 0
 
-  for epoch in range(n_epoch):
-      for i, (images, labels) in enumerate(train_loader):
-          images = Variable(images)
-          labels = Variable(labels).long()
-          optimizer.zero_grad()
-          logits = net(images)
-          outputs = F.softmax(logits, dim=1)
-          loss = criterion(outputs, labels)
-          loss.backward()
-          optimizer.step()
-      correct = 0
-      total = 0
-      for images, labels in test_loader:
-          images = Variable(images)
-          logits = net(images)
-          outputs = F.softmax(logits, dim=1)
-          _, predicted = torch.max(outputs.data, 1)
-          total += labels.size(0)
-          correct += (predicted == labels).sum()
-      accuracy = correct/total
-      if verbose:
-        print("Epoch: {}. Loss: {}. Accuracy: {}.".format(epoch, loss.item(), accuracy))
+    for epoch in range(n_epoch):
+        for i, (images, labels) in enumerate(train_loader):
+            images = Variable(images)
+            labels = Variable(labels).long()
+            optimizer.zero_grad()
+            logits = net(images)
+            outputs = F.softmax(logits, dim=1)
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
+        correct = 0
+        total = 0
+        for images, labels in test_loader:
+            images = Variable(images)
+            logits = net(images)
+            outputs = F.softmax(logits, dim=1)
+            _, predicted = torch.max(outputs.data, 1)
+            total += labels.size(0)
+            correct += (predicted == labels).sum()
+        accuracy = correct / total
+        if verbose:
+            print("Epoch: {}. Loss: {}. Accuracy: {}.".format(epoch, loss.item(), accuracy))
 
-      if accuracy.item() > max_acc:
-        net_best = net
+        if accuracy.item() > max_acc:
+            net_best = net
 
-      max_acc = max(max_acc, accuracy.item())
+        max_acc = max(max_acc, accuracy.item())
 
-  if return_net:
-    return max_acc, net_best
-  else:
-    return max_acc
-
-
-
-
-
-
-
+    if return_net:
+        return max_acc, net_best
+    else:
+        return max_acc
 
 
 """
@@ -870,8 +856,3 @@ def sample_utility_and_cpt(n, size_min, size_max, utility_func, utility_func_arg
     torch.save({'model_state_dict': net.state_dict(), 'subset_index': subset_index, 'accuracy': acc}, 
                PATH)
 """
-
-
-
-
-
