@@ -129,7 +129,6 @@ for i in range(5):
       v_args['u_total'] = np.clip( value_args['u_total']+np.random.normal(scale=args.sigma), a_min=0, a_max=1)
 
 
-  dump_training_results(v_args, dataset, model_type, value_type, x_train, y_train)
   sv = compute_value(value_type, v_args)
   dump_computed_semi_values(v_args, dataset, model_type, value_type, x_train, y_train, sv)
 
