@@ -1,3 +1,4 @@
+import pandas as pd
 import torch
 
 
@@ -13,6 +14,8 @@ import config
 
 
 import argparse
+
+from json_helpers import dump_training_results, dump_computed_semi_values
 
 big_dataset = config.big_dataset
 OpenML_dataset = config.OpenML_dataset
@@ -126,4 +129,9 @@ elif value_type == "KNN":
 save_arg["sv_baseline"] = sv_baseline
 save_arg["n_data"] = n_data
 
+
+df_train = np.concatenate((x_train, y_train.reshape((y_train.shape[0], 1))), axis=1)
+df_val = np.concatenate((x_val, y_val.reshape((y_train.shape[0], 1))), axis=1)
+
+dump_training_results(df_train, df_val, X_feature_test, y_feature_test, value_type, dataset, model_type, sv_baseline, random_state)
 pickle.dump(save_arg, open(save_name, "wb"))
