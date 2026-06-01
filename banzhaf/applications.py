@@ -1,17 +1,15 @@
-import torch
+import copy
+import pdb
+import random
 
+import config
 
 # general
 import numpy as np
-import copy
-import random
-import pdb
-
+import torch
 from helper import *
-from utility_func import *
 from prepare_data import *
-import config
-
+from utility_func import *
 
 # python applications.py --task mislabel_detect --dataset pol --value_type Shapley_Perm --model_type MLP --n_data 200 --n_val 200 --n_repeat 5 --n_sample 10000 --batch_size 32 --lr 1e-2 --flip_ratio 0.1 --random_state 1
 # python applications.py --task weighted_acc --dataset pol --value_type Shapley_Perm --model_type MLP --n_data 200 --n_val 200 --n_repeat 5 --n_sample 10000 --batch_size 32 --lr 1e-2 --flip_ratio 0.1 --random_state 1
@@ -20,9 +18,9 @@ big_dataset = config.big_dataset
 OpenML_dataset = config.OpenML_dataset
 
 
-from json_helpers import dump_computed_semi_values
-
 import argparse
+
+from json_helpers import dump_computed_semi_values
 
 parser = argparse.ArgumentParser("")
 
@@ -115,7 +113,7 @@ for i in range(5):
             v_args["u_total"] = np.clip(value_args["u_total"] + np.random.normal(scale=args.sigma), a_min=0, a_max=1)
 
     sv = compute_value(value_type, v_args)
-    dump_computed_semi_values(v_args, dataset, model_type, value_type, x_train, y_train, sv)
+    dump_computed_semi_values(v_args, dataset, model_type, value_type, sv, i)
 
     if args.debug:
         pdb.set_trace()

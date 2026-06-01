@@ -21,16 +21,16 @@ def dict_to_json(dict, filename="v_args.json"):
     print(f"Dumped JSON to {filename}")
 
 
-def dump_computed_semi_values(v_args, dataset, model_type, value_type, X_train, y_train, sv):
-    v_args2 = dict()
-    v_args2["scores"] = v_args["y_feature"]
-    v_args2["subset_indices"] = v_args["X_feature"]
-    v_args2["valuation_method"] = rename_valuation_method_for_R(value_type)
-    v_args2["dataset_name"] = dataset
-    v_args2["model"] = model_type
-    v_args2["training_df"] = np.column_stack([X_train, y_train])
-    v_args2["semi_values"] = sv
-    dict_to_json(v_args2, "../output/computed_semi_values.json")
+def dump_computed_semi_values(v_args, dataset, model_type, value_type, sv, i):
+    v_args2 = {
+        "scores": v_args["y_feature"],
+        "subset_indices": v_args["X_feature"],
+        "valuation_method": rename_valuation_method_for_R(value_type),
+        "dataset_name": dataset,
+        "model": model_type,
+        "semi_values": sv,
+    }
+    dict_to_json(v_args2, f"../output/computed_semi_values_{i}.json")
 
 
 def rename_valuation_method_for_R(value_type):
