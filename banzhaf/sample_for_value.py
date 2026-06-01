@@ -1,4 +1,5 @@
 import argparse
+import copy
 import datetime as dt
 import pickle
 import random
@@ -88,8 +89,8 @@ def process_yfeature(y_feature):
     return y_feature
 
 
-df_train = np.concatenate((x_train, y_train.reshape((y_train.shape[0], 1))), axis=1)
-df_val = np.concatenate((x_val, y_val.reshape((y_val.shape[0], 1))), axis=1)
+df_train = np.concatenate((x_train, y_train[:, np.newaxis]), axis=1)
+df_val = np.concatenate((x_val, y_val[:, np.newaxis]), axis=1)
 
 
 def export_training_results(args: dict):
@@ -114,6 +115,24 @@ def export_results_basic(scores: npt.NDArray, subset_indices: npt.NDArray):
     elif scores.ndim == 2:
         scores = np.mean(scores, axis=1)
         print("scores are 2d, aggregate nested arrays by mean")
+    else:
+        raise ValueError(f"expected scores to have 1 or 2 dimensions, instead found: {'scores'.ndim} dimensions")
+    export_training_results({"scores": scores, "subset_indices": subset_indices})
+
+
+def export_results_loo(scores: npt.NDArray, subset_indices: list, u_total: npt.NDArray):
+    # add x_train indices to subset_indices
+    subset_indices = copy.deepcopy(subset_indices)
+    subset_indices.append(np.arange(n_data))
+
+    # add u_total to scores
+    if scores.ndim == 1:
+        scores = np.concatenate([scores, np.array([u_total])], axis=0)
+        print("scores are 1d, all good - only add u_total to scores")
+    elif scores.ndim == 2:
+        scores = np.concatenate([scores, u_total[np.newaxis, :]], axis=0)
+        scores = np.mean(scores, axis=1)
+        print("scores are 2d, aggregate nested arrays by mean and add u_total to scores")
     else:
         raise ValueError(f"expected scores to have 1 or 2 dimensions, instead found: {'scores'.ndim} dimensions")
     export_training_results({"scores": scores, "subset_indices": subset_indices})
@@ -152,7 +171,7 @@ elif value_type == "LOO":
     if n_repeat == 1:
         u_total = u_total[0]
     save_arg = {"X_feature": X_feature_test, "y_feature": y_feature_test, "u_total": u_total}
-    export_training_results({"scores": y_feature_test, "subset_indices": X_feature_test, "u_total": u_total})
+    export_results_loo(scores=y_feature_test, subset_indices=X_feature_test, u_total=u_total)
 
 elif value_type == "KNN":
     sv = knn_shapley(x_train, y_train, x_val, y_val, K=10)
