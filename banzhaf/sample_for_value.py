@@ -1,4 +1,5 @@
 import argparse
+import datetime as dt
 import pickle
 import random
 
@@ -91,13 +92,15 @@ df_val = np.concatenate((x_val, y_val.reshape((y_train.shape[0], 1))), axis=1)
 
 
 def export_training_results(args: dict):
+    now = (dt.datetime.now()).isoformat(sep=" ", timespec="seconds")
     out = {
-        "df_train": df_train,
-        "df_val": df_val,
-        "value_type": value_type,
-        "value_type_R": rename_valuation_method_for_R(value_type),
-        "dataset": dataset,
-        "model_type": model_type,
+        "dataset_name": dataset,
+        "model": model_type,
+        "valuation_method": rename_valuation_method_for_R(value_type),
+        "valuation_method_python": value_type,
+        "timestamp": now,
+        "training_df": df_train,
+        "validation_df": df_val,
         "sv_baseline": sv_baseline,
         "random_state": random_state,
     }
@@ -118,8 +121,8 @@ elif value_type == "Shapley_Perm":
     save_arg = {"X_feature": X_feature_test, "y_feature": y_feature_test}
     export_training_results(
         {
-            "X_subset_indices": X_feature_test,
-            "model_scores_for_subset_indices": y_feature_test,
+            "scores": y_feature_test,
+            "subset_indices": X_feature_test,
         }
     )
 
@@ -129,8 +132,8 @@ elif value_type == "Banzhaf_GT":
     save_arg = {"X_feature": X_feature_test, "y_feature": y_feature_test}
     export_training_results(
         {
-            "X_subset_indices": X_feature_test,
-            "model_scores_for_subset_indices": y_feature_test,
+            "scores": y_feature_test,
+            "subset_indices": X_feature_test,
         }
     )
 
@@ -140,8 +143,8 @@ elif value_type == "Shapley_GT":
     save_arg = {"X_feature": X_feature_test, "y_feature": y_feature_test}
     export_training_results(
         {
-            "X_subset_indices": X_feature_test,
-            "model_scores_for_subset_indices": y_feature_test,
+            "scores": y_feature_test,
+            "subset_indices": X_feature_test,
         }
     )
 
@@ -152,7 +155,7 @@ elif value_type == "LOO":
     if n_repeat == 1:
         u_total = u_total[0]
     save_arg = {"X_feature": X_feature_test, "y_feature": y_feature_test, "u_total": u_total}
-    export_training_results({"X_subset_indices": X_feature_test, "model_scores_for_subset_indices": y_feature_test, "u_total": u_total})
+    export_training_results({"scores": y_feature_test, "subset_indices": X_feature_test, "u_total": u_total})
 
 elif value_type == "KNN":
     sv = knn_shapley(x_train, y_train, x_val, y_val, K=10)
