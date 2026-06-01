@@ -88,7 +88,7 @@ def process_yfeature(y_feature):
 
 
 df_train = np.concatenate((x_train, y_train.reshape((y_train.shape[0], 1))), axis=1)
-df_val = np.concatenate((x_val, y_val.reshape((y_train.shape[0], 1))), axis=1)
+df_val = np.concatenate((x_val, y_val.reshape((y_val.shape[0], 1))), axis=1)
 
 
 def export_training_results(args: dict):
