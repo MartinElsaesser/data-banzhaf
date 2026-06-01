@@ -7,6 +7,7 @@ import config
 
 # general
 import numpy as np
+import numpy.typing as npt
 import torch
 from helper import *
 from json_helpers import dict_to_json, rename_valuation_method_for_R
@@ -107,6 +108,14 @@ def export_training_results(args: dict):
     dict_to_json(out | args, "../output/train_results.json")
 
 
+def export_results_basic(scores: npt.NDArray, subset_indices: npt.NDArray):
+    if scores.ndim == 2:
+        scores = np.mean(scores, axis=1)
+    if scores.ndim > 2:
+        raise ValueError(f"scores had more than 2 dimensions ({'scores'.ndim})")
+    export_training_results({"scores": scores, "subset_indices": subset_indices})
+
+
 if value_type == "Banzhaf_MC":
     n_sample_per_data = int(n_sample / n_data)
     save_arg = {}
@@ -119,34 +128,19 @@ elif value_type == "Shapley_Perm":
     X_feature_test, y_feature_test = sample_utility_shapley_perm(n_perm, utility_func_mult, utility_func_args)
     y_feature_test = process_yfeature(y_feature_test)
     save_arg = {"X_feature": X_feature_test, "y_feature": y_feature_test}
-    export_training_results(
-        {
-            "scores": y_feature_test,
-            "subset_indices": X_feature_test,
-        }
-    )
+    export_results_basic(scores=y_feature_test, subset_indices=X_feature_test)
 
 elif value_type == "Banzhaf_GT":
     X_feature_test, y_feature_test = sample_utility_banzhaf_gt(n_sample, utility_func_mult, utility_func_args, dummy=True)
     y_feature_test = process_yfeature(y_feature_test)
     save_arg = {"X_feature": X_feature_test, "y_feature": y_feature_test}
-    export_training_results(
-        {
-            "scores": y_feature_test,
-            "subset_indices": X_feature_test,
-        }
-    )
+    export_results_basic(scores=y_feature_test, subset_indices=X_feature_test)
 
 elif value_type == "Shapley_GT":
     X_feature_test, y_feature_test = sample_utility_shapley_gt(n_sample, utility_func_mult, utility_func_args)
     y_feature_test = process_yfeature(y_feature_test)
     save_arg = {"X_feature": X_feature_test, "y_feature": y_feature_test}
-    export_training_results(
-        {
-            "scores": y_feature_test,
-            "subset_indices": X_feature_test,
-        }
-    )
+    export_results_basic(scores=y_feature_test, subset_indices=X_feature_test)
 
 elif value_type == "LOO":
     X_feature_test, y_feature_test, u_total = sample_utility_loo(utility_func_mult, utility_func_args)
