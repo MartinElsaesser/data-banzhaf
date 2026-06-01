@@ -113,7 +113,7 @@ def export_results_basic(scores: npt.NDArray, subset_indices: list):
     if scores.ndim == 1:
         print("scores are 1d, all good")
     elif scores.ndim == 2:
-        scores = np.mean(scores, axis=1)
+        scores = scores[:, 0]
         print("scores are 2d, aggregate nested arrays by mean")
     else:
         raise ValueError(f"expected scores to have 1 or 2 dimensions, instead found: {'scores'.ndim} dimensions")
@@ -131,7 +131,7 @@ def export_results_loo(scores: npt.NDArray, subset_indices: list, u_total: npt.N
         print("scores are 1d, all good - only add u_total to scores")
     elif scores.ndim == 2:
         scores = np.concatenate([scores, u_total[np.newaxis, :]], axis=0)
-        scores = np.mean(scores, axis=1)
+        scores = scores[:, 0]
         print("scores are 2d, aggregate nested arrays by mean and add u_total to scores")
     else:
         raise ValueError(f"expected scores to have 1 or 2 dimensions, instead found: {'scores'.ndim} dimensions")
