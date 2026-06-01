@@ -109,10 +109,13 @@ def export_training_results(args: dict):
 
 
 def export_results_basic(scores: npt.NDArray, subset_indices: npt.NDArray):
-    if scores.ndim == 2:
+    if scores.ndim == 1:
+        print("scores are 1d, all good")
+    elif scores.ndim == 2:
         scores = np.mean(scores, axis=1)
-    if scores.ndim > 2:
-        raise ValueError(f"scores had more than 2 dimensions ({'scores'.ndim})")
+        print("scores are 2d, aggregate nested arrays by mean")
+    else:
+        raise ValueError(f"expected scores to have 1 or 2 dimensions, instead found: {'scores'.ndim} dimensions")
     export_training_results({"scores": scores, "subset_indices": subset_indices})
 
 
