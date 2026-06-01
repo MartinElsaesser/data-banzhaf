@@ -13,22 +13,15 @@
         "--security-opt=label=disable"
     ],
     "mounts": [
-        // make git work
-        {
-            "source": "${localEnv:HOME}/.ssh/known_hosts",
-            "target": "/home/vscode/.ssh/known_hosts",
-            "type": "bind"
-        },
+        // make ssh work
+        "source=${localEnv:HOME}/.ssh/known_hosts,target=/home/vscode/.ssh/known_hosts,readonly,type=bind",
         {
             "source": "${localEnv:SSH_AUTH_SOCK}",
             "target": "/ssh-agent",
             "type": "bind"
         },
-        {
-            "source": "${localEnv:HOME}/.gitconfig",
-            "target": "/home/vscode/.gitconfig",
-            "type": "bind"
-        }
+        // make timezone work
+        "source=/etc/localtime,target=/etc/localtime,readonly,type=bind"
     ],
     "containerEnv": {
         "SSH_AUTH_SOCK": "/ssh-agent"
