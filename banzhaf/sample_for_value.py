@@ -109,7 +109,7 @@ def export_training_results(args: dict):
     dict_to_json(out | args, "../output/train_results.json")
 
 
-def export_results_basic(scores: npt.NDArray, subset_indices: npt.NDArray):
+def export_results_basic(scores: npt.NDArray, subset_indices: list):
     if scores.ndim == 1:
         print("scores are 1d, all good")
     elif scores.ndim == 2:
