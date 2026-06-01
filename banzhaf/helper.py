@@ -1,20 +1,14 @@
-import torch
-
-
-# general
-import numpy as np
 import pickle
-
 from random import randint
-
-from sklearn.cluster import KMeans
-from sklearn.metrics import f1_score, roc_auc_score, average_precision_score
-
-
-from utility_func import *
 
 import config
 
+# general
+import numpy as np
+import torch
+from sklearn.cluster import KMeans
+from sklearn.metrics import average_precision_score, f1_score, roc_auc_score
+from utility_func import *
 
 big_dataset = config.big_dataset
 OpenML_dataset = config.OpenML_dataset
@@ -164,7 +158,9 @@ def compute_value(value_type, args):
     elif value_type == "BetaShapley":
         sv = betasv_permsampling_from_data(args["X_feature"], args["y_feature"], args["n_data"], args["alpha"], args["beta"], v0=args["sv_baseline"])
     elif value_type == "Banzhaf_GT":
-        sv = banzhaf_grouptest_bias_from_data(args["X_feature"], args["y_feature"], args["n_data"], dummy=True)
+        sv = banzhaf_grouptest_bias_from_data(
+            args["X_feature"], args["y_feature"], args["n_data"], dummy=False
+        )  # dummy=False is needed for python comparison, originally it was set to True
     elif value_type == "LOO":
         sv = compute_loo(args["y_feature"], args["u_total"])
     elif value_type == "KNN":
