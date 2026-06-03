@@ -13,24 +13,28 @@ class MyEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def dict_to_json(dict, filename="v_args.json"):
+def dict_to_json(dict, file_path):
     """
     Save a dictionary to a json file.
     """
-    json.dump(dict, open(filename, "w"), cls=MyEncoder, indent=4)
-    print(f"Dumped JSON to {filename}")
+    json.dump(dict, open(file_path, "w"), cls=MyEncoder, indent=4)
+    print(f"Dumped JSON to {file_path}")
+
+
+def load_json_as_dict(file_path):
+    with open(file_path, "r") as f:
+        data = json.load(f)
+    return data
 
 
 def dump_computed_semi_values(v_args, dataset, model_type, value_type, sv, i):
-    v_args2 = {
-        "scores": v_args["y_feature"],
-        "subset_indices": v_args["X_feature"],
-        "valuation_method": rename_valuation_method_for_R(value_type),
-        "dataset_name": dataset,
-        "model": model_type,
-        "semi_values": sv,
-    }
-    dict_to_json(v_args2, f"../output/computed_semi_values_{i}.json")
+    if i != 0:
+        # expect this function to be called 5 times, only export on first call (i==0)
+        return
+    train_results_path = "../output/train_results.json"
+    train_results = load_json_as_dict(train_results_path)
+    train_results["semi_values"] = sv
+    dict_to_json(train_results, train_results_path)
 
 
 def rename_valuation_method_for_R(value_type):
