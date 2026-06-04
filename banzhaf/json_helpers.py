@@ -33,7 +33,7 @@ def dump_computed_semi_values(v_args, dataset, model_type, value_type, sv, i):
         return
     train_results_path = "../output/train_results.json"
     train_results = load_json_as_dict(train_results_path)
-    train_results["semi_values"] = sv
+    train_results["semi_values"] = ["{:0.20f}".format(x) for x in sv]
     dict_to_json(train_results, train_results_path)
 
 
