@@ -1,5 +1,4 @@
 import argparse
-import copy
 import datetime as dt
 import pickle
 import random
@@ -114,28 +113,29 @@ def export_results_basic(scores: npt.NDArray, subset_indices: list):
         print("scores are 1d, all good")
     elif scores.ndim == 2:
         scores = scores[:, 0]
-        print("scores are 2d, aggregate nested arrays by mean")
+        print("scores are 2d, pick 0th scores")
     else:
         raise ValueError(f"expected scores to have 1 or 2 dimensions, instead found: {'scores'.ndim} dimensions")
     export_training_results({"scores": scores, "subset_indices": subset_indices})
 
 
-def export_results_loo(scores: npt.NDArray, subset_indices: list, u_total: npt.NDArray):
-    # add x_train indices to subset_indices
-    subset_indices = copy.deepcopy(subset_indices)
-    subset_indices.append(np.arange(n_data))
+def export_results_loo(scores: npt.NDArray, subsets_indices: list[npt.NDArray], u_total: npt.NDArray):
+    # results for complete training set must be the first element
+    completeset_indices = np.arange(n_data)
+    loo_subset_indices = [completeset_indices, *subsets_indices]
 
     # add u_total to scores
     if scores.ndim == 1:
-        scores = np.concatenate([scores, np.array([u_total])], axis=0)
-        print("scores are 1d, all good - only add u_total to scores")
+        print("scores are 1d, all good")
     elif scores.ndim == 2:
-        scores = np.concatenate([scores, u_total[np.newaxis, :]], axis=0)
         scores = scores[:, 0]
-        print("scores are 2d, aggregate nested arrays by mean and add u_total to scores")
+        u_total = u_total[0]
+        print("scores are 2d, pick 0th scores")
     else:
         raise ValueError(f"expected scores to have 1 or 2 dimensions, instead found: {'scores'.ndim} dimensions")
-    export_training_results({"scores": scores, "subset_indices": subset_indices})
+
+    scores = [u_total, *scores]
+    export_training_results({"scores": scores, "subset_indices": loo_subset_indices})
 
 
 if value_type == "Banzhaf_MC":
@@ -173,7 +173,10 @@ elif value_type == "LOO":
     if n_repeat == 1:
         u_total = u_total[0]
     save_arg = {"X_feature": X_feature_test, "y_feature": y_feature_test, "u_total": u_total}
-    export_results_loo(scores=y_feature_test, subset_indices=X_feature_test, u_total=u_total)
+    export_results_loo(scores=y_feature_test, subsets_indices=X_feature_test, u_total=u_total)
+    # assert that export_results_loo did not mutate the data
+    assert len(X_feature_test) == n_data
+    assert y_feature_test.shape == (n_data, n_repeat)
 
 elif value_type == "KNN":
     sv = knn_shapley(x_train, y_train, x_val, y_val, K=10)
