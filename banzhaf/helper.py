@@ -160,7 +160,7 @@ def compute_value(value_type, args):
     elif value_type == "Banzhaf_GT":
         sv = banzhaf_grouptest_bias_from_data(
             args["X_feature"], args["y_feature"], args["n_data"], dummy=False
-        )  # dummy=False is needed for python comparison, originally it was set to True
+        )  # dummy=False is needed for comparison with the r implementation, originally it was set to True
     elif value_type == "LOO":
         sv = compute_loo(args["y_feature"], args["u_total"])
     elif value_type == "KNN":

@@ -155,7 +155,7 @@ elif value_type == "Shapley_Perm":
 elif value_type == "Banzhaf_GT":
     X_feature_test, y_feature_test = sample_utility_banzhaf_gt(
         n_sample, utility_func_mult, utility_func_args, dummy=False
-    )  # dummy=False is needed for python comparison, originally it was set to True
+    )  # dummy=False is needed for comparison with the r implementation, originally it was set to True
     y_feature_test = process_yfeature(y_feature_test)
     save_arg = {"X_feature": X_feature_test, "y_feature": y_feature_test}
     export_results_basic(scores=y_feature_test, subset_indices=X_feature_test)
