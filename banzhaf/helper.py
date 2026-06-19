@@ -500,7 +500,7 @@ def sample_utility_givensize(n_sample_lst, utility_func, utility_func_args):
 
 
 # Implement Dummy Data Point Idea
-def sample_utility_shapley_gt(n_sample, utility_func, utility_func_args):
+def sample_utility_shapley_gt(n_sample, n_repeat, utility_func, utility_func_args):
 
     x_train, y_train, x_val, y_val = utility_func_args
     n_data = len(y_train)
@@ -508,6 +508,10 @@ def sample_utility_shapley_gt(n_sample, utility_func, utility_func_args):
     N = n_data + 1
     Z = np.sum([1 / k + 1 / (N - k) for k in range(1, N)])
     q = [1 / Z * (1 / k + 1 / (N - k)) for k in range(1, N)]
+
+    print("DEBUG PRINTS; TODO: delete later")
+    output = {"n_data": n_data, "N": N, "probs": ["{:0.20f}".format(x) for x in q], "normalization_const": "{:0.20f}".format(Z)}
+    print(output)
 
     X_feature_test = []
     y_feature_test = []
@@ -519,12 +523,12 @@ def sample_utility_shapley_gt(n_sample, utility_func, utility_func_args):
         # Uniformly sample k data points from N data points
         subset_ind = np.random.choice(np.arange(N), size, replace=False)
 
-        X_feature_test.append(subset_ind)
+        X_feature_test.append(subset_ind)  # subset with dummy point
 
-        subset_ind = subset_ind[subset_ind < n_data]
+        subset_ind = subset_ind[subset_ind < n_data]  # remove dummy point
 
-        if size == 0:
-            y_feature_test.append([0.1])
+        if len(subset_ind) == 0:  # check if subset is empty after removing the dummy point
+            y_feature_test.append(np.repeat([0.1], n_repeat))
         else:
             y_feature_test.append(utility_func(x_train[subset_ind], y_train[subset_ind], x_val, y_val))
 
@@ -603,13 +607,12 @@ def shapley_grouptest_from_data(X_feature, y_feature, n_data):
 
     C = {}
     for i in range(N):
-        for j in [n_data]:
-            C[(i, j)] = Z * (B.dot(A[:, i] - A[:, j])) / n_sample
+        C[i] = Z * (B.dot(A[:, i] - A[:, n_data])) / n_sample
 
     sv_last = 0
     sv_approx = np.zeros(n_data)
 
     for i in range(n_data):
-        sv_approx[i] = C[(i, N - 1)] + sv_last
+        sv_approx[i] = C[i] + sv_last
 
     return sv_approx

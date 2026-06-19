@@ -161,7 +161,7 @@ elif value_type == "Banzhaf_GT":
     export_results_basic(scores=y_feature_test, subset_indices=X_feature_test)
 
 elif value_type == "Shapley_GT":
-    X_feature_test, y_feature_test = sample_utility_shapley_gt(n_sample, utility_func_mult, utility_func_args)
+    X_feature_test, y_feature_test = sample_utility_shapley_gt(n_sample, n_repeat, utility_func_mult, utility_func_args)
     y_feature_test = process_yfeature(y_feature_test)
     save_arg = {"X_feature": X_feature_test, "y_feature": y_feature_test}
     export_results_basic(scores=y_feature_test, subset_indices=X_feature_test)

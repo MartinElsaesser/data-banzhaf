@@ -96,7 +96,7 @@ data_lst = []
 for i in range(5):
     v_args = copy.deepcopy(value_args)
 
-    if value_type in ["Shapley_Perm", "Banzhaf_GT", "BetaShapley"]:
+    if value_type in ["Shapley_Perm", "Banzhaf_GT", "BetaShapley", "Shapley_GT"]:
         if dataset in big_dataset or dataset in OpenML_dataset:
             v_args["y_feature"] = value_args["y_feature"][:, i]
         else:
