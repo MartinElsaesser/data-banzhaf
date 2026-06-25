@@ -41,9 +41,7 @@ def rename_valuation_method_for_R(value_type):
     if value_type == "LOO":
         return "Leave One Out"
     elif value_type == "Shapley_Perm":
-        return "Permutation Data Shapley"
-    elif value_type == "Shapley_GT":
-        return "Group Testing Shapley"
+        return "Permutation Shapley"
     elif value_type == "Banzhaf_GT":
         return "MSR Data Banzhaf"
     else:
